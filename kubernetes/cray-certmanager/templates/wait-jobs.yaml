@@ -22,6 +22,7 @@ spec:
       containers:
         - name: wait-for-{{ template "cray-certmanager.fullname" . }}-webhook
           image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
+          imagePullPolicy: {{ .Values.kubectl.image.pullPolicy }}
           command:
             - '/bin/sh'
           args:

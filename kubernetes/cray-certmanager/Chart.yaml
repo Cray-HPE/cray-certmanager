@@ -1,11 +1,15 @@
-apiVersion: v1
-appVersion: 0.14.1
+apiVersion: v2
+name: cray-certmanager
+version: 0.6.0
 description: Support for managing PKI certificates and associated key material inside k8s
 keywords:
 - cert-manager
-icon: https://github.com/jetstack/cert-manager/raw/master/logo/logo.png
+home: https://github.com/Cray-HPE/cray-certmanager
 sources:
 - https://github.com/jetstack/cert-manager
-name: cray-certmanager
-home: "cloud/cray-charts"
-version: 0.5.0
+dependencies:
+  - name: cert-manager
+    version: v0.14.1
+    repository: https://charts.jetstack.io
+icon: https://github.com/jetstack/cert-manager/raw/master/logo/logo.png
+appVersion: 0.14.1

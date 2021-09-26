@@ -4,54 +4,62 @@
 # ExtraArgs (--enable-certificate-owner-ref=true) used to delete TLS key material (K8S secret)
 # when certificate is deleted
 # https://github.com/jetstack/cert-manager/pull/1828
-
 kubectl:
   image:
-    repository: dtr.dev.cray.com/loftsman/loftsman
-    tag: 0.5.1
-
+    repository: arti.dev.cray.com/csm-docker-stable-local/loftsman
+    tag: 0.5.2
+    pullPolicy: IfNotPresent
 cert-manager:
-   replicaCount: 3
-   affinity:
+  image:
+    repository: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-controller
+    # tag defaults to appVersion
+  replicaCount: 3
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - cert-manager
+            topologyKey: kubernetes.io/hostname
+  webhook:
+    image:
+      repository: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-webhook
+      # tag defaults to appVersion
+    replicaCount: 3
+    affinity:
       podAntiAffinity:
-         preferredDuringSchedulingIgnoredDuringExecution:
-           - weight: 1
-             podAffinityTerm:
-               labelSelector:
-                 matchExpressions:
-                 - key: app
-                   operator: In
-                   values:
-                   - cert-manager
-               topologyKey: kubernetes.io/hostname
-   webhook:
-      replicaCount: 3
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 1
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: app
-                      operator: In
-                      values:
-                        - webhook
-                topologyKey: kubernetes.io/hostname
-      serviceName: cray-certmanager-cert-manager-webhook
-   extraArgs:
-      - "--enable-certificate-owner-ref=true"
-   cainjector:
-      replicaCount: 3
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 1
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: app
-                      operator: In
-                      values:
-                        - cainjector
-                topologyKey: kubernetes.io/hostname
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - webhook
+              topologyKey: kubernetes.io/hostname
+    serviceName: cray-certmanager-cert-manager-webhook
+  extraArgs:
+    - "--enable-certificate-owner-ref=true"
+  cainjector:
+    image:
+      repository: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-cainjector
+      # tag defaults to appVersion
+    replicaCount: 3
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - cainjector
+              topologyKey: kubernetes.io/hostname
