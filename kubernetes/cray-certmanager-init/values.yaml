@@ -3,10 +3,11 @@
 # (dependency in cray-certmanager chart)
 
 namespace:
-   name: cert-manager
-   istioInjection: enabled
+  name: cert-manager
+  istioInjection: enabled
 
 kubectl:
   image:
-    repository: dtr.dev.cray.com/loftsman/loftsman
-    tag: 0.5.1
+    repository: arti.dev.cray.com/csm-docker-stable-local/loftsman
+    tag: 0.5.2
+    pullPolicy: IfNotPresent

@@ -21,7 +21,8 @@ spec:
       serviceAccountName: cray-{{ template "cray-certmanager-init.fullname" . }}-jobs
       containers:
         - name: wait
-          image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
+          image: {{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }
+          imagePullPolicy: {{ .Values.kubectl.image.pullPolicy }}
           command:
             - '/bin/sh'
           args:
