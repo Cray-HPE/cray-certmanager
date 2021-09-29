@@ -8,6 +8,6 @@ namespace:
 
 kubectl:
   image:
-    repository: arti.dev.cray.com/csm-docker-stable-local/loftsman
-    tag: 0.5.2
-    pullPolicy: IfNotPresent
+    repository: artifactory.algol60.net/csm-docker/stable/docker-kubectl
+    tag: 1.19.9
+    pullPolicy: Always
