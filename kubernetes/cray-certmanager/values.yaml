@@ -4,11 +4,11 @@
 # ExtraArgs (--enable-certificate-owner-ref=true) used to delete TLS key material (K8S secret)
 # when certificate is deleted
 # https://github.com/jetstack/cert-manager/pull/1828
-kubectl:
+curl:
   image:
-    repository: arti.dev.cray.com/csm-docker-stable-local/loftsman
-    tag: 0.5.2
-    pullPolicy: IfNotPresent
+    repository: artifactory.algol60.net/csm-docker/stable/docker.io/curlimages/curl
+    tag: 7.73.0
+    pullPolicy: Always
 cert-manager:
   image:
     repository: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-controller
