@@ -63,6 +63,7 @@ jobs:
       matrix:
         chart: ${{ fromJSON(needs.lint.outputs.charts) }}
       fail-fast: false
+    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -94,6 +95,7 @@ jobs:
       matrix:
         image: ${{ fromJSON(needs.lint.outputs.images) }}
       fail-fast: false
+    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - name: Run Snyk to check Docker image for vulnerabilities (${{ matrix.image }})
