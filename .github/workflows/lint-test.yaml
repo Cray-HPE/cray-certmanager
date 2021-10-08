@@ -28,7 +28,7 @@ jobs:
 
       - name: Run chart-testing (list-changed)
         id: list-changed
-        run: echo "::set-out name=charts::$(ct list-changed --chart-dirs kubernetes | jq -R . | jq -sc .)"
+        run: echo "::set-output name=charts::$(ct list-changed --chart-dirs kubernetes | jq -R . | jq -sc .)"
 
       - name: Run chart-testing (lint)
         run: ct lint --chart-dirs kubernetes
