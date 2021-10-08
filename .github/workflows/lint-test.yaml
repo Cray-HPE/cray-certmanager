@@ -1,0 +1,71 @@
+name: Lint and Test charts
+on:
+  pull_request:
+    branches:
+      - master
+      - release/**
+  workflow_dispatch:
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    outputs:
+      charts: ${{ steps.list-changed.outputs.charts }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v1.1
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.1.0
+
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: echo "::set-out name=charts::$(ct list-changed --chart-dirs kubernetes | jq -R . | jq -sc .)"
+
+      - name: Run chart-testing (lint)
+        run: ct lint --chart-dirs kubernetes
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.2.0
+        if: fromJSON(steps.list-changed.outputs.charts)[0] != null
+
+      - name: Run chart-testing (install)
+        run: ct install
+
+  scan:
+    # Equivalent to:
+    #   ct list-changed --chart-dirs kubernetes | while read chart; do
+    #     helm template release "$chart" --dry-run --replace --dependency-update > "${chart}/k8s-manifest.yaml"
+    #     snyk iac test "${chart}/k8s-manifest.yaml"
+    #   done
+    needs: lint
+    if: fromJSON(needs.lint.outputs.charts)[0] != null
+    strategy:
+      matrix:
+        chart: ${{ fromJSON(needs.lint.outputs.charts) }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v1.1
+
+      - name: Template chart (${{ matrix.chart }})
+        run: helm template release ${{ matrix.chart }} --dry-run --replace --dependency-update > ${{ matrix.chart }}/k8s-manifest.yaml
+
+      - name: Run Snyk to check Kubernetes resources (${{ matrix.chart }})
+        uses: snyk/actions/iac@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          file: ${{ matrix.chart }}/k8s-manifest.yaml
+
