@@ -3,9 +3,11 @@ name: cray-certmanager-init
 version: 0.6.0
 description: cert-manager CRDs and other init actions
 keywords:
-- cert-manager
+  - cert-manager
 home: https://github.com/Cray-HPE/cray-certmanager
 sources:
-- https://github.com/jetstack/cert-manager
+  - https://github.com/jetstack/cert-manager
+maintainers:
+  - name: kburns-hpe
 icon: https://github.com/jetstack/cert-manager/raw/master/logo/logo.png
 appVersion: 0.14.1
