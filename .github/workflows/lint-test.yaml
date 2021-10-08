@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       charts: ${{ steps.list-changed.outputs.charts }}
+      images: ${{ steps.extract-images.outputs.images }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -40,7 +41,17 @@ jobs:
       - name: Run chart-testing (install)
         run: ct install
 
-  scan:
+      - name: Extract images
+        id: extract-images
+        if: fromJSON(steps.list-changed.outputs.charts)[0] != null
+        run: |
+          echo "${{ steps.list-changed.outputs.charts }}" | jq -r '.[]' | while read chart do;
+            helm template release "$chart" --dry-run --replace --dependency-update | yq e -N '.. | .image? | select(.)' -
+            helm show chart "$chart" | yq e '.annotations."artifacthub.io/images"' - | yq e -N '.[] | .image' -
+          done | sort -u > extracted-images.txt
+          echo "::set-output name=images::$(cat extracted-images.txt | jq -R . | jq -sc .)"
+
+  scan-charts:
     # Equivalent to:
     #   ct list-changed --chart-dirs kubernetes | while read chart; do
     #     helm template release "$chart" --dry-run --replace --dependency-update > "${chart}/k8s-manifest.yaml"
@@ -75,4 +86,20 @@ jobs:
       #  uses: github/codeql-action/upload-sarif@v1
       #  with:
       #    sarif_file: snyk.sarif
+
+  scan-images:
+    needs: lint
+    if: fromJSON(needs.lint.outputs.images)[0] != null
+    strategy:
+      matrix:
+        image: ${{ fromJSON(needs.lint.outputs.images) }}
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Snyk to check Docker image for vulnerabilities (${{ matrix.image }})
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: ${{ matrix.image }}
 
