@@ -44,8 +44,11 @@ jobs:
       - name: Extract images
         id: extract-images
         if: fromJSON(steps.list-changed.outputs.charts)[0] != null
+        env:
+          CHARTS: "${{ steps.list-changed.outputs.charts }}"
+        shell: bash
         run: |
-          echo "${{ steps.list-changed.outputs.charts }}" | jq -r '.[]' | while read chart; do
+          jq -r '.[]' <<< "$CHARTS" | while read chart; do
             helm template release "$chart" --dry-run --replace --dependency-update | yq e -N '.. | .image? | select(.)' -
             helm show chart "$chart" | yq e '.annotations."artifacthub.io/images"' - | yq e -N '.[] | .image' -
           done | sort -u > extracted-images.txt
