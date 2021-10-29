@@ -4,11 +4,13 @@ on:
     branches:
       - master
       - release/**
+  schedule:
+    - cron: "0 0 * * *"
   workflow_dispatch:
 jobs:
   lint-test-scan:
-    uses: Cray-HPE/.github/.github/workflows/charts-lint-test-scan.yaml@main
+    uses: Cray-HPE/.github/.github/workflows/charts-lint-test-scan.yml@main
     with:
       chart-dirs: kubernetes
     secrets:
-      snyk-token: ${{ secrets.SNYK_TOKEN }}
+      snyk-token: ${{ secrets.SNYK_TOKEN }
