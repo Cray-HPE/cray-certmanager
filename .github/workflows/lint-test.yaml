@@ -9,6 +9,6 @@ jobs:
   lint-test-scan:
     uses: Cray-HPE/.github/.github/workflows/charts-lint-test-scan.yaml@main
     with:
-      charts-dir: kubernetes
+      chart-dirs: kubernetes
     secrets:
       snyk-token: ${{ secrets.SNYK_TOKEN }}
