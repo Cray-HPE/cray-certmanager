@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 jobs:
   lint-test-scan:
-    uses: Cray-HPE/.github/.github/workflows/charts-lint-test-scan.yaml@main
+    uses: Cray-HPE/.github/.github/workflows/charts/lint-test-scan.yaml@main
     with:
       charts-dir: kubernetes
     secrets:
