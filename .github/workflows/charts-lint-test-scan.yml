@@ -13,4 +13,4 @@ jobs:
     with:
       chart-dirs: kubernetes
     secrets:
-      snyk-token: ${{ secrets.SNYK_TOKEN }
+      snyk-token: ${{ secrets.SNYK_TOKEN }}
