@@ -1,0 +1,4 @@
+chart-dirs:
+  - kubernetes
+chart-repos:
+  - jetstack=https://charts.jetstack.io
