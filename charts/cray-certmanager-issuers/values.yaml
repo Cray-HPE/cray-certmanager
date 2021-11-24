@@ -5,8 +5,8 @@
 
 kubectl:
   image:
-    repository: dtr.dev.cray.com/loftsman/loftsman
-    tag: 0.5.1
+    repository: artifactory.algol60.net/csm-docker/stable/docker-kubectl
+    tag: 1.19.15
     pullPolicy: IfNotPresent
 
 # Chart only deploys vault-backed issuers (e.g., no

@@ -21,7 +21,8 @@ spec:
       serviceAccountName: cray-{{ template "cray-certmanager.fullname" . }}-jobs
       containers:
         - name: wait-for-{{ template "cray-certmanager.fullname" . }}-webhook
-          image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
+          image: "{{ .Values.curl.image.repository }}:{{ .Values.curl.image.tag }}"
+          imagePullPolicy: {{ .Values.curl.image.pullPolicy }}
           command:
             - '/bin/sh'
           args:

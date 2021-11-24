@@ -1,0 +1,65 @@
+# Required for the webhook certificate to match the 'cray' overlay service name
+# Also updated in the cray-certmanager-init CRDs (*...webhookClientConfig.service instances)
+
+# ExtraArgs (--enable-certificate-owner-ref=true) used to delete TLS key material (K8S secret)
+# when certificate is deleted
+# https://github.com/jetstack/cert-manager/pull/1828
+curl:
+  image:
+    repository: artifactory.algol60.net/csm-docker/stable/docker.io/curlimages/curl
+    tag: 7.80.0
+    pullPolicy: IfNotPresent
+cert-manager:
+  image:
+    repository: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-controller
+    # tag defaults to appVersion
+  replicaCount: 3
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - cert-manager
+            topologyKey: kubernetes.io/hostname
+  webhook:
+    image:
+      repository: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-webhook
+      # tag defaults to appVersion
+    replicaCount: 3
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - webhook
+              topologyKey: kubernetes.io/hostname
+    serviceName: cray-certmanager-cert-manager-webhook
+  extraArgs:
+    - "--enable-certificate-owner-ref=true"
+  cainjector:
+    image:
+      repository: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-cainjector
+      # tag defaults to appVersion
+    replicaCount: 3
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - cainjector
+              topologyKey: kubernetes.io/hostname

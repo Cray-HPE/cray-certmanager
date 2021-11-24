@@ -1,57 +1,76 @@
-# Copyright 2019-2021 Hewlett Packard Enterprise Development LP
-#
-# Permission is hereby granted, free of charge, to any person obtaining a
-# copy of this software and associated documentation files (the "Software"),
-# to deal in the Software without restriction, including without limitation
-# the rights to use, copy, modify, merge, publish, distribute, sublicense,
-# and/or sell copies of the Software, and to permit persons to whom the
-# Software is furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included
-# in all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
-# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-# OTHER DEALINGS IN THE SOFTWARE.
-#
-# (MIT License)
+# Copyright 2021 Hewlett Packard Enterprise Development LP
 
-CHART_PATH ?= kubernetes
-CHART_NAME_1 ?= cray-certmanager
-CHART_NAME_2 ?= cray-certmanager-init
-CHART_NAME_3 ?= cray-certmanager-issuers
-CHART_VERSION_1 ?= local
-CHART_VERSION_2 ?= local
-CHART_VERSION_3 ?= local
+CHART_METADATA_IMAGE ?= artifactory.algol60.net/csm-docker/stable/chart-metadata
+YQ_IMAGE ?= artifactory.algol60.net/docker.io/mikefarah/yq:4
+HELM_IMAGE ?= artifactory.algol60.net/docker.io/alpine/helm:3.7.1
+HELM_UNITTEST_IMAGE ?= artifactory.algol60.net/docker.io/quintush/helm-unittest
+HELM_DOCS_IMAGE ?= artifactory.algol60.net/docker.io/jnorwood/helm-docs:v1.5.0
 
-HELM_UNITTEST_IMAGE ?= quintush/helm-unittest:3.3.0-0.2.5
+all: lint dep-up test package
 
-charts: chart1 chart2 chart3 chart1_test chart2_test chart3_test
+helm:
+	docker run --rm \
+		--user $(shell id -u):$(shell id -g) \
+		--mount type=bind,src="$(shell pwd)",dst=/src \
+		-w /src \
+		-e HELM_CACHE_HOME=/src/.helm/cache \
+		-e HELM_CONFIG_HOME=/src/.helm/config \
+		-e HELM_DATA_HOME=/src/.helm/data \
+		$(HELM_IMAGE) \
+		$(CMD)
 
-chart1:
-	helm dep up ${CHART_PATH}/${CHART_NAME_1}
-	helm package ${CHART_PATH}/${CHART_NAME_1} -d ${CHART_PATH}/.packaged --version ${CHART_VERSION_1}
+lint:
+	CMD="lint charts/cray-certmanager"         $(MAKE) helm
+	CMD="lint charts/cray-certmanager-init"    $(MAKE) helm
+	CMD="lint charts/cray-certmanager-issuers" $(MAKE) helm
 
-chart2:
-	helm dep up ${CHART_PATH}/${CHART_NAME_2}
-	helm package ${CHART_PATH}/${CHART_NAME_2} -d ${CHART_PATH}/.packaged --version ${CHART_VERSION_2}
+dep-up:
+	CMD="dep up charts/cray-certmanager"         $(MAKE) helm
+	CMD="dep up charts/cray-certmanager-init"    $(MAKE) helm
+	CMD="dep up charts/cray-certmanager-issuers" $(MAKE) helm
 
-chart3:
-	helm dep up ${CHART_PATH}/${CHART_NAME_3}
-	helm package ${CHART_PATH}/${CHART_NAME_3} -d ${CHART_PATH}/.packaged --version ${CHART_VERSION_3}
+test:
+	docker run --rm \
+		-v ${PWD}/charts:/apps \
+		${HELM_UNITTEST_IMAGE} -3 \
+		cray-certmanager \
+		cray-certmanager-init \
+		cray-certmanager-issuers
 
-chart1_test:
-	helm lint "${CHART_PATH}/${CHART_NAME_1}"
-	docker run --rm -v ${PWD}/${CHART_PATH}:/apps ${HELM_UNITTEST_IMAGE} -3 ${CHART_NAME_1}
+package:
+ifdef CHART_VERSIONS
+	CMD="package charts/cray-certmanager         --version $(word 1, $(CHART_VERSIONS)) -d packages" $(MAKE) helm
+	CMD="package charts/cray-certmanager-init    --version $(word 2, $(CHART_VERSIONS)) -d packages" $(MAKE) helm
+	CMD="package charts/cray-certmanager-issuers --version $(word 3, $(CHART_VERSIONS)) -d packages" $(MAKE) helm
+else
+	CMD="package charts/* -d packages" $(MAKE) helm
+endif
 
-chart2_test:
-	helm lint "${CHART_PATH}/${CHART_NAME_2}"
-	docker run --rm -v ${PWD}/${CHART_PATH}:/apps ${HELM_UNITTEST_IMAGE} -3 ${CHART_NAME_2}
+extracted-images:
+	CMD="template release $(CHART) --dry-run --replace --dependency-update" $(MAKE) -s helm \
+	| docker run --rm -i $(YQ_IMAGE) e -N '.. | .image? | select(.)' -
 
-chart3_test:
-	helm lint "${CHART_PATH}/${CHART_NAME_3}"
-	docker run --rm -v ${PWD}/${CHART_PATH}:/apps ${HELM_UNITTEST_IMAGE} -3 ${CHART_NAME_3}
+annotated-images:
+	CMD="show chart $(CHART)" $(MAKE) -s helm \
+	| docker run --rm -i $(YQ_IMAGE) e -N '.annotations."artifacthub.io/images"' - \
+	| docker run --rm -i $(YQ_IMAGE) e -N '.. | .image? | select(.)' -
+
+images:
+	{ CHART=charts/cray-certmanager         $(MAKE) -s extracted-images annotated-images; \
+	  CHART=charts/cray-certmanager-init    $(MAKE) -s extracted-images annotated-images; \
+	  CHART=charts/cray-certmanager-issuers $(MAKE) -s extracted-images annotated-images; \
+	} | sort -u
+
+snyk:
+	$(MAKE) -s images | xargs --verbose -n 1 snyk container test
+
+gen-docs:
+	docker run --rm \
+		--user $(shell id -u):$(shell id -g) \
+		--mount type=bind,src="$(shell pwd)",dst=/src \
+		-w /src \
+		$(HELM_DOCS_IMAGE) \
+		helm-docs --chart-search-root=charts
+
+clean:
+	$(RM) -r .helm packages

@@ -14,29 +14,26 @@ pipeline {
         NAME = "cray-certmanager"
         DESCRIPTION = "Deploys and configure CertManager on a Cray system."
         IS_STABLE = getBuildIsStable()
-        CHART_NAME_1 = "cray-certmanager"
-        CHART_NAME_2 = "cray-certmanager-init"
-        CHART_NAME_3 = "cray-certmanager-issuers"
-        CHART_VERSION_1 = getChartVersion(name: env.CHART_NAME_1, isStable: env.IS_STABLE)
-        CHART_VERSION_2 = getChartVersion(name: env.CHART_NAME_2, isStable: env.IS_STABLE)
-        CHART_VERSION_3 = getChartVersion(name: env.CHART_NAME_3, isStable: env.IS_STABLE)
     }
 
     stages {
         stage("Build") {
-            parallel {
-                stage("Charts") {
-                    steps {
-                        sh "make charts"
-                    }
-                }
+            environment {
+                CHART_VERSIONS = [
+                    getChartVersion(name: "cray-certmanager",         chartDirectory: "charts", isStable: env.IS_STABLE),
+                    getChartVersion(name: "cray-certmanager-init",    chartDirectory: "charts", isStable: env.IS_STABLE),
+                    getChartVersion(name: "cray-certmanager-issuers", chartDirectory: "charts", isStable: env.IS_STABLE)
+                ].join(" ")
+            }
+            steps {
+                sh "make"
             }
         }
 
         stage("Publish") {
             steps {
                 script {
-                    publishCsmHelmCharts(component: env.NAME, chartsPath: "${WORKSPACE}/kubernetes/.packaged", isStable: env.IS_STABLE)
+                    publishCsmHelmCharts(component: env.NAME, chartsPath: "${WORKSPACE}/packages", isStable: env.IS_STABLE)
                 }
             }
         }
