@@ -6,8 +6,8 @@
 kubectl:
   image:
     repository: artifactory.algol60.net/csm-docker/stable/docker-kubectl
-    tag: 1.19.9
-    pullPolicy: Always
+    tag: 1.19.15
+    pullPolicy: IfNotPresent
 
 # Chart only deploys vault-backed issuers (e.g., no
 # self-signed currently). All values shown are required.

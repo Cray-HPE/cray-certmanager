@@ -7,8 +7,8 @@
 curl:
   image:
     repository: artifactory.algol60.net/csm-docker/stable/docker.io/curlimages/curl
-    tag: 7.73.0
-    pullPolicy: Always
+    tag: 7.80.0
+    pullPolicy: IfNotPresent
 cert-manager:
   image:
     repository: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-controller

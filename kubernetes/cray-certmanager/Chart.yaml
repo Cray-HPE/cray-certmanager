@@ -26,7 +26,7 @@ annotations:
           url: https://github.com/Cray-HPE/cray-certmanager/pull/3
   artifacthub.io/images: |
     - name: curl
-      image: artifactory.algol60.net/csm-docker/stable/docker.io/curlimages/curl:7.73.0
+      image: artifactory.algol60.net/csm-docker/stable/docker.io/curlimages/curl:7.80.0
     - name: cert-manager-cainjector
       image: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-cainjector:v0.14.1
     - name: cert-manager-controller

@@ -11,3 +11,5 @@ maintainers:
   - name: kburns-hpe
 icon: https://github.com/jetstack/cert-manager/raw/master/logo/logo.png
 appVersion: 0.14.1
+annotations:
+  artifacthub.io/license: MIT
