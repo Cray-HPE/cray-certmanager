@@ -1,4 +1,8 @@
-# Change Log
+##v0.7.0
+
+- Add post-upgrade hook to patch securityContext to cray-certmanager deployments
+
+##v0.6.0
 
 Changes to the `cray-certmanager` chart, indexed by semantic versions.
 

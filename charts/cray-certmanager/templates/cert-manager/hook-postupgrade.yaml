@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cray-{{ template "cray-certmanager.fullname" . }}-hook-postupgrade
+  labels:
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/version: {{ $.Chart.AppVersion }}
+    helm.sh/chart: {{ $.Chart.Name }}-{{ $.Chart.Version | replace "+" "_" }}
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-delete-policy: hook-succeeded,before-hook-creation
+spec:
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      restartPolicy: Never
+      serviceAccountName: cray-{{ template "cray-certmanager.fullname" . }}-hook
+      containers:
+        - name: "cert-manager-hook"
+          image: "{{ $.Values.kubectl.image.repository }}:{{ $.Values.kubectl.image.tag }}"
+          imagePullPolicy: "{{ $.Values.kubectl.image.pullPolicy }}"
+          command:
+            - '/bin/sh'
+          args:
+            - '-c'
+            - '/usr/local/sbin/modify_securityContext.sh'
+          volumeMounts:
+          - mountPath: /usr/local/sbin
+            name: cert-manager-hook-volume
+      volumes:
+      - name: cert-manager-hook-volume
+        configMap:
+          name: cray-{{ template "cray-certmanager.fullname" . }}-hook-configmap
+          defaultMode: 0755
