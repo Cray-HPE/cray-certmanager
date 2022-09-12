@@ -21,7 +21,6 @@
 # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 #
-#
 # used to patch issuers with dynamic service
 # account secret name
 #
@@ -79,6 +78,13 @@ vaultIssuers:
     vaultK8SAuthPath: /v1/auth/kubernetes
   tapms-operator-common:
     namespace: tapms-operator
+    instance: common
+    vaultServer: "http://cray-vault.vault.svc.cluster.local:8200"
+    vaultPKIRole: pki-common
+    vaultPKIPath: pki_common/sign
+    vaultK8SAuthPath: /v1/auth/kubernetes
+  slurm-operator-common:
+    namespace: slurm-operator
     instance: common
     vaultServer: "http://cray-vault.vault.svc.cluster.local:8200"
     vaultPKIRole: pki-common

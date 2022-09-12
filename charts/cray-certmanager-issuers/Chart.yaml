@@ -23,7 +23,7 @@
 #
 apiVersion: v2
 name: cray-certmanager-issuers
-version: 0.6.1
+version: 0.6.2
 description: cert-manager per-namespace issuer setup
 keywords:
   - cert-manager
