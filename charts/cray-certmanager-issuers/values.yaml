@@ -90,3 +90,10 @@ vaultIssuers:
     vaultPKIRole: pki-common
     vaultPKIPath: pki_common/sign
     vaultK8SAuthPath: /v1/auth/kubernetes
+  ceph-snapshot-operator-common:
+    namespace: operators
+    instance: common
+    vaultServer: "http://cray-vault.vault.svc.cluster.local:8200"
+    vaultPKIRole: pki-common
+    vaultPKIPath: pki_common/sign
+    vaultK8SAuthPath: /v1/auth/kubernetes
