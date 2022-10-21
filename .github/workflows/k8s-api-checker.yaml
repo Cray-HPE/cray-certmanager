@@ -1,0 +1,26 @@
+name: Run Api Checker
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+jobs:
+  k8s-api-checker:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Check for removed and deprecated api usage
+        uses: Cray-HPE/.github/actions/csm-k8s-api-checker@v0-csm-k8s-api-checker
+        with:
+          prerequisite: |
+            helm dependency build charts/cray-certmanager
+            helm template --generate-name --dry-run charts/cray-certmanager > cray-certmanager.yaml
+            helm template --generate-name --dry-run charts/cray-certmanager-init --set Values.namespace.istioInjection="enabled" > cray-certmanager-init.yaml
+            helm template --generate-name --dry-run charts/cray-certmanager-issuers > cray-certmanager-issuers.yaml
+            sed -i.orig -e 's/release-name-//g' cray-certmanager.yaml cray-certmanager-init.yaml cray-certmanager-issuers.yaml
+            rm *.orig
