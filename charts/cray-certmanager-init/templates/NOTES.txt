@@ -1,3 +1,0 @@
-Installed CRDs and namespace for {{ .Chart.Name }}.
-
-Your release is named {{ .Release.Name }}.

@@ -26,6 +26,12 @@ cert-manager:
                   values:
                     - cert-manager
             topologyKey: kubernetes.io/hostname
+  extraArgs:
+    - "--set=webhook.hostNetwork=true"
+    - "--set=webhook.securePort=10260"
+    - "--set=enable-certificate-owner-ref=true"
+    - "--set=installCRDs=true"
+    - "--set=startupapicheck.podAnnotations\\.sidecar\\.istio\\.io/inject=false"
   webhook:
     image:
       repository: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-webhook
@@ -44,8 +50,6 @@ cert-manager:
                       - webhook
               topologyKey: kubernetes.io/hostname
     serviceName: cray-certmanager-cert-manager-webhook
-  extraArgs:
-    - "--enable-certificate-owner-ref=true"
   cainjector:
     image:
       repository: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-cainjector
@@ -63,3 +67,8 @@ cert-manager:
                     values:
                       - cainjector
               topologyKey: kubernetes.io/hostname
+# Not actively ran just used in a k8s job to upgrade existing resources.
+ctl:
+  image:
+    repository: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-ctl
+    tag: v1.5.5
