@@ -8,6 +8,9 @@ HELM_DOCS_IMAGE ?= artifactory.algol60.net/docker.io/jnorwood/helm-docs:v1.5.0
 
 all: lint dep-up test package
 
+update:
+	$(HELM) repo update
+
 helm:
 	docker run --rm \
 		--user $(shell id -u):$(shell id -g) \
@@ -21,27 +24,23 @@ helm:
 
 lint:
 	CMD="lint charts/cray-certmanager"         $(MAKE) helm
-	CMD="lint charts/cray-certmanager-init"    $(MAKE) helm
 	CMD="lint charts/cray-certmanager-issuers" $(MAKE) helm
 
 dep-up:
 	CMD="dep up charts/cray-certmanager"         $(MAKE) helm
-	CMD="dep up charts/cray-certmanager-init"    $(MAKE) helm
 	CMD="dep up charts/cray-certmanager-issuers" $(MAKE) helm
 
 test:
 	docker run --rm \
 		-v ${PWD}/charts:/apps \
-		${HELM_UNITTEST_IMAGE} -3 \
+		${HELM_UNITTEST_IMAGE} \
 		cray-certmanager \
-		cray-certmanager-init \
 		cray-certmanager-issuers
 
 package:
 ifdef CHART_VERSIONS
 	CMD="package charts/cray-certmanager         --version $(word 1, $(CHART_VERSIONS)) -d packages" $(MAKE) helm
-	CMD="package charts/cray-certmanager-init    --version $(word 2, $(CHART_VERSIONS)) -d packages" $(MAKE) helm
-	CMD="package charts/cray-certmanager-issuers --version $(word 3, $(CHART_VERSIONS)) -d packages" $(MAKE) helm
+	CMD="package charts/cray-certmanager-issuers --version $(word 2, $(CHART_VERSIONS)) -d packages" $(MAKE) helm
 else
 	CMD="package charts/* -d packages" $(MAKE) helm
 endif
@@ -57,7 +56,6 @@ annotated-images:
 
 images:
 	{ CHART=charts/cray-certmanager         $(MAKE) -s extracted-images annotated-images; \
-	  CHART=charts/cray-certmanager-init    $(MAKE) -s extracted-images annotated-images; \
 	  CHART=charts/cray-certmanager-issuers $(MAKE) -s extracted-images annotated-images; \
 	} | sort -u
 

@@ -21,7 +21,6 @@ pipeline {
             environment {
                 CHART_VERSIONS = [
                     getChartVersion(name: "cray-certmanager",         chartDirectory: "charts", isStable: env.IS_STABLE),
-                    getChartVersion(name: "cray-certmanager-init",    chartDirectory: "charts", isStable: env.IS_STABLE),
                     getChartVersion(name: "cray-certmanager-issuers", chartDirectory: "charts", isStable: env.IS_STABLE)
                 ].join(" ")
             }
