@@ -6,12 +6,19 @@
 # https://github.com/jetstack/cert-manager/pull/1828
 curl:
   image:
-    repository: artifactory.algol60.net/csm-docker/stable/docker.io/curlimages/curl
+    registry: artifactory.algol60.net
+    repository: csm-docker/stable/docker.io/curlimages/curl
     tag: 7.80.0
     pullPolicy: IfNotPresent
 cert-manager:
+  installCRDs: true
+
+  global:
+    logLevel: 6
+
   image:
-    repository: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-controller
+    registry: artifactory.algol60.net
+    repository: csm-docker/stable/quay.io/jetstack/cert-manager-controller
     # tag defaults to appVersion
   replicaCount: 3
   affinity:
@@ -27,14 +34,14 @@ cert-manager:
                     - cert-manager
             topologyKey: kubernetes.io/hostname
   extraArgs:
-    - "--set=webhook.hostNetwork=true"
-    - "--set=webhook.securePort=10260"
-    - "--set=enable-certificate-owner-ref=true"
-    - "--set=installCRDs=true"
-    - "--set=startupapicheck.podAnnotations\\.sidecar\\.istio\\.io/inject=false"
+    - "--debug"
+    - "--enable-certificate-owner-ref=true"
   webhook:
+    hostNetwork: true
+    securePort: 10260
     image:
-      repository: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-webhook
+      registry: artifactory.algol60.net
+      repository: csm-docker/stable/quay.io/jetstack/cert-manager-webhook
       # tag defaults to appVersion
     replicaCount: 3
     affinity:
@@ -52,7 +59,8 @@ cert-manager:
     serviceName: cray-certmanager-cert-manager-webhook
   cainjector:
     image:
-      repository: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-cainjector
+      registry: artifactory.algol60.net
+      repository: csm-docker/stable/quay.io/jetstack/cert-manager-cainjector
       # tag defaults to appVersion
     replicaCount: 3
     affinity:
@@ -67,8 +75,15 @@ cert-manager:
                     values:
                       - cainjector
               topologyKey: kubernetes.io/hostname
+  startupapicheck:
+    podAnnotations:
+      "sidecar.istio.io/inject": false
+    image:
+      registry: artifactory.algol60.net
+      repository: csm-docker/stable/quay.io/jetstack/cert-manager-ctl
 # Not actively ran just used in a k8s job to upgrade existing resources.
 ctl:
   image:
-    repository: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-ctl
+    registry: artifactory.algol60.net
+    repository: csm-docker/stable/quay.io/jetstack/cert-manager-ctl
     tag: v1.5.5
