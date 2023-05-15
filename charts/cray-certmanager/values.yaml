@@ -6,8 +6,7 @@
 # https://github.com/jetstack/cert-manager/pull/1828
 curl:
   image:
-    registry: artifactory.algol60.net
-    repository: csm-docker/stable/docker.io/curlimages/curl
+    repository: artifactory.algol60.net/csm-docker/stable/docker.io/curlimages/curl
     tag: 7.80.0
     pullPolicy: IfNotPresent
 cert-manager:
@@ -86,4 +85,3 @@ ctl:
   image:
     registry: artifactory.algol60.net
     repository: csm-docker/stable/quay.io/jetstack/cert-manager-ctl
-    tag: v1.5.5

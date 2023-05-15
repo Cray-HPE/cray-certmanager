@@ -9,7 +9,7 @@ ignore:
         created: 2021-11-24T18:38:58.561Z
   SNYK-CC-K8S-47:
     - '*':
-        reason: Requires analysis
-        expires: 2022-02-01T00:00:00.000Z
+        reason: Cert manager needs to deal with Secrets from any namespace to work.
+        expires: 2030-00-00T00:00:00.000Z
         created: 2021-11-24T18:39:07.684Z
 patch: {}
