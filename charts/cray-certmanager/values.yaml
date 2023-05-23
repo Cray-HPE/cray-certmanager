@@ -33,11 +33,8 @@ cert-manager:
                     - cert-manager
             topologyKey: kubernetes.io/hostname
   extraArgs:
-    - "--debug"
     - "--enable-certificate-owner-ref=true"
   webhook:
-    hostNetwork: true
-    securePort: 10260
     image:
       registry: artifactory.algol60.net
       repository: csm-docker/stable/quay.io/jetstack/cert-manager-webhook
@@ -76,7 +73,7 @@ cert-manager:
               topologyKey: kubernetes.io/hostname
   startupapicheck:
     podAnnotations:
-      "sidecar.istio.io/inject": false
+      "sidecar.istio.io/inject": "false"
     image:
       registry: artifactory.algol60.net
       repository: csm-docker/stable/quay.io/jetstack/cert-manager-ctl
