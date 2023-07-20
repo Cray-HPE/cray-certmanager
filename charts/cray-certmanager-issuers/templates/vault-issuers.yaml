@@ -13,7 +13,7 @@ metadata:
 # Create a vault issuer. The secretRef name will
 # be patched later, and will not initially be valid
 #
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   name: cert-manager-issuer-{{ .instance }}

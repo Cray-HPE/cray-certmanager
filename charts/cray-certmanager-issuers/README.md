@@ -27,34 +27,39 @@ vaultIssuers:
 Verify Issuer:
 
 ```
-# kubectl get issuer -n services -o yaml
+# kubectl get issuer --namespace services -o yaml
 apiVersion: v1
 items:
-- apiVersion: cert-manager.io/v1alpha3
+- apiVersion: cert-manager.io/v1
   kind: Issuer
   metadata:
-    creationTimestamp: "2020-04-23T13:53:13Z"
+    annotations:
+      meta.helm.sh/release-name: cray-certmanager-issuers
+      meta.helm.sh/release-namespace: cert-manager
+    creationTimestamp: "2023-07-14T19:48:04Z"
     generation: 2
+    labels:
+      app.kubernetes.io/managed-by: Helm
     name: cert-manager-issuer-common
     namespace: services
-    resourceVersion: "1066339"
-    selfLink: /apis/cert-manager.io/v1alpha3/namespaces/services/issuers/cert-manager-issuer-common
-    uid: 1c0bfb27-00e4-4732-9984-9d15e9d5fd24
+    resourceVersion: "13203"
+    uid: c8cf6ee6-7eee-4f13-b25b-0d428865b511
   spec:
     vault:
       auth:
         kubernetes:
           mountPath: /v1/auth/kubernetes
-          role: common
+          role: pki-common
           secretRef:
             key: token
-            name: cert-manager-issuer-common-token-plhw2
-      path: pki_common/sign/common
+            name: cert-manager-issuer-common-token-58hnr
+      path: pki_common/sign/pki-common
       server: http://cray-vault.vault.svc.cluster.local:8200
   status:
     conditions:
-    - lastTransitionTime: "2020-04-23T13:53:18Z"
+    - lastTransitionTime: "2023-07-14T19:48:14Z"
       message: Vault verified
+      observedGeneration: 2
       reason: VaultVerified
       status: "True"
       type: Ready
@@ -67,7 +72,7 @@ metadata:
 Manifest you can use to create a certificate against a named cert-manager issuer:
 
 ```
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: istio-ingress
@@ -108,7 +113,7 @@ Verify the certificate is ready:
 
 ```
 # kubectl get certificate -n services istio-ingress -o yaml
-apiVersion: cert-manager.io/v1alpha3
+apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   creationTimestamp: "2020-04-23T14:21:32Z"
@@ -116,7 +121,7 @@ metadata:
   name: istio-ingress
   namespace: services
   resourceVersion: "1083056"
-  selfLink: /apis/cert-manager.io/v1alpha3/namespaces/services/certificates/istio-ingress
+  selfLink: /apis/cert-manager.io/v1/namespaces/services/certificates/istio-ingress
   uid: 7777b471-85fb-4c5a-a60b-05b65f25fa33
 spec:
   commonName: istio-public-ingress.example.com
