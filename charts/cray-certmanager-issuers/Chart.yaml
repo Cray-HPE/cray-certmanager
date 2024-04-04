@@ -23,7 +23,7 @@
 #
 apiVersion: v2
 name: cray-certmanager-issuers
-version: 0.6.3
+version: 0.7.0
 description: cert-manager per-namespace issuer setup
 keywords:
   - cert-manager
@@ -33,6 +33,6 @@ sources:
 maintainers:
   - name: kburns-hpe
 icon: https://github.com/jetstack/cert-manager/raw/master/logo/logo.png
-appVersion: 1.5.5
+appVersion: 1.12.9
 annotations:
   artifacthub.io/license: MIT
