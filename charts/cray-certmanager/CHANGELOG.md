@@ -2,6 +2,10 @@
 
 Changes to the `cray-certmanager` chart, indexed by semantic versions.
 
+##v0.8.0
+
+- Upgrade cert-manager to v1.12.9
+
 ##v0.7.0
 
 - Removed cray-certmanager-init
