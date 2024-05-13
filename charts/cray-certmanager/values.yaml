@@ -14,6 +14,13 @@ cert-manager:
 
   global:
     logLevel: 6
+    podSecurityPolicy:
+      # Create PodSecurityPolicy for cert-manager.
+      #
+      # Note that PodSecurityPolicy was deprecated in Kubernetes 1.21 and removed in Kubernetes 1.25.
+      enabled: true
+      # Configure the PodSecurityPolicy to use AppArmor.
+      useAppArmor: true
 
   image:
     registry: artifactory.algol60.net
@@ -32,9 +39,6 @@ cert-manager:
                   values:
                     - cert-manager
             topologyKey: kubernetes.io/hostname
-  securityContext:
-    runAsNonRoot: true
-    seccompProfile: null
   extraArgs:
     - "--enable-certificate-owner-ref=true"
   webhook:
@@ -56,9 +60,6 @@ cert-manager:
                       - webhook
               topologyKey: kubernetes.io/hostname
     serviceName: cray-certmanager-cert-manager-webhook
-    securityContext:
-      runAsNonRoot: true
-      seccompProfile: null
   cainjector:
     image:
       registry: artifactory.algol60.net
@@ -77,18 +78,12 @@ cert-manager:
                     values:
                       - cainjector
               topologyKey: kubernetes.io/hostname
-    securityContext:
-      runAsNonRoot: true
-      seccompProfile: null
   startupapicheck:
     podAnnotations:
       "sidecar.istio.io/inject": "false"
     image:
       registry: artifactory.algol60.net
       repository: csm-docker/stable/quay.io/jetstack/cert-manager-ctl
-    securityContext:
-      runAsNonRoot: true
-      seccompProfile: null
 # Not actively ran just used in a k8s job to upgrade existing resources.
 ctl:
   image:
