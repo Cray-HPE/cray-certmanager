@@ -10,6 +10,19 @@ metadata:
   namespace: {{ .namespace }}
 ---
 #
+# Create a secret for the service account.
+# Secrets must explicitly be created in k8s 1.24+
+#
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cert-manager-issuer-{{ .instance }}-token
+  namespace: {{ .namespace }}
+  annotations:
+    kubernetes.io/service-account.name: cert-manager-issuer-{{ .instance }}
+type: kubernetes.io/service-account-token
+---
+#
 # Create a vault issuer. The secretRef name will
 # be patched later, and will not initially be valid
 #

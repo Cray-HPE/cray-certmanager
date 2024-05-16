@@ -5,6 +5,15 @@ metadata:
   namespace: cert-manager
   name: cert-manager-issuers-patcher
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cert-manager-issuers-patcher-token
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/service-account.name: cert-manager-issuers-patcher
+type: kubernetes.io/service-account-token
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
