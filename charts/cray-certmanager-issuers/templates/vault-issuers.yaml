@@ -10,21 +10,37 @@ metadata:
   namespace: {{ .namespace }}
 ---
 #
-# Create a secret for the service account.
-# Secrets must explicitly be created in k8s 1.24+
+# Add an RBAC Role so that cert-manager can get tokens
+# for the ServiceAccount. This is for cert-maanger >= v1.12
 #
-apiVersion: v1
-kind: Secret
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
 metadata:
-  name: cert-manager-issuer-{{ .instance }}-token
+  name: cert-manager-issuer-{{ .instance }}
   namespace: {{ .namespace }}
-  annotations:
-    kubernetes.io/service-account.name: cert-manager-issuer-{{ .instance }}
-type: kubernetes.io/service-account-token
+rules:
+  - apiGroups: ['']
+    resources: ['serviceaccounts/token']
+    resourceNames: ['vault-issuer']
+    verbs: ['create']
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cert-manager-issuer-{{ .instance }}
+  namespace: {{ .namespace }}
+subjects:
+  - kind: ServiceAccount
+    name: cert-manager-issuer-{{ .instance }}
+    namespace: {{ .namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: cert-manager-issuer-{{ .instance }}
 ---
 #
-# Create a vault issuer. The secretRef name will
-# be patched later, and will not initially be valid
+# Create a vault issuer. The  references a service
+# account for Secretless Authentication
 #
 apiVersion: cert-manager.io/v1
 kind: Issuer
@@ -41,20 +57,5 @@ spec:
         mountPath: {{ .vaultK8SAuthPath }}
         serviceAccountRef:
           name: cert-manager-issuer-{{ .instance }}
----
-#
-# Create a configmap to store a simple k8s patch script, used
-# to patch the secretRef by post* helm hooks.
-#
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: cert-manager-issuer-{{ .instance }}-{{ .namespace }}-patch
-data:
-  entrypoint.sh: |-
-    #!/bin/bash
-    SECRET_NAME="$(kubectl get sa cert-manager-issuer-{{ .instance }} -n {{ .namespace }} -o jsonpath='{.secrets[0].name}')"
-    echo -e "spec:\n  vault:\n    auth:\n      kubernetes:\n        secretRef:\n          name: $SECRET_NAME" > /tmp/issuer.patch
-    kubectl patch issuer -n {{ .namespace }} cert-manager-issuer-{{ .instance }} --type=merge --patch "$(cat /tmp/issuer.patch)"
 ---
 {{- end }}
