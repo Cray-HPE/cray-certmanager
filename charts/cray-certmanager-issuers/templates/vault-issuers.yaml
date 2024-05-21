@@ -10,8 +10,37 @@ metadata:
   namespace: {{ .namespace }}
 ---
 #
-# Create a vault issuer. The secretRef name will
-# be patched later, and will not initially be valid
+# Add an RBAC Role so that cert-manager can get tokens
+# for the ServiceAccount. This is for cert-maanger >= v1.12
+#
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cert-manager-issuer-{{ .instance }}
+  namespace: {{ .namespace }}
+rules:
+  - apiGroups: ['']
+    resources: ['serviceaccounts/token']
+    resourceNames: ['cert-manager-issuer-{{ .instance }}']
+    verbs: ['create']
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cert-manager-issuer-{{ .instance }}
+  namespace: {{ .namespace }}
+subjects:
+  - kind: ServiceAccount
+    name: cray-certmanager-cert-manager
+    namespace: cert-manager
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: cert-manager-issuer-{{ .instance }}
+---
+#
+# Create a vault issuer. The  references a service
+# account for Secretless Authentication
 #
 apiVersion: cert-manager.io/v1
 kind: Issuer
@@ -26,23 +55,7 @@ spec:
       kubernetes:
         role: {{ .vaultPKIRole }}
         mountPath: {{ .vaultK8SAuthPath }}
-        secretRef:
-          name: cert-manager-issuer-{{ .instance }}-token
-          key: token
----
-#
-# Create a configmap to store a simple k8s patch script, used
-# to patch the secretRef by post* helm hooks.
-#
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: cert-manager-issuer-{{ .instance }}-{{ .namespace }}-patch
-data:
-  entrypoint.sh: |-
-    #!/bin/bash
-    SECRET_NAME="$(kubectl get sa cert-manager-issuer-{{ .instance }} -n {{ .namespace }} -o jsonpath='{.secrets[0].name}')"
-    echo -e "spec:\n  vault:\n    auth:\n      kubernetes:\n        secretRef:\n          name: $SECRET_NAME" > /tmp/issuer.patch
-    kubectl patch issuer -n {{ .namespace }} cert-manager-issuer-{{ .instance }} --type=merge --patch "$(cat /tmp/issuer.patch)"
+        serviceAccountRef:
+          name: cert-manager-issuer-{{ .instance }}
 ---
 {{- end }}

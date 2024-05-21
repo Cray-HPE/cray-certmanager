@@ -2,6 +2,10 @@
 
 Changes to the `cray-certmanager-issuers` chart, indexed by semantic versions.
 
+## v0.7.1
+
+- Upgrade cray-certmanager-issuers to authenticate with kubernetes service accounts for k8s 1.24
+
 ## v0.7.0
 
 - Upgrade cert-manager to v1.12.9
