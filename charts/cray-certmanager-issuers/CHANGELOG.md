@@ -2,6 +2,11 @@
 
 Changes to the `cray-certmanager-issuers` chart, indexed by semantic versions.
 
+## v0.7.2
+
+- Update cray-certmanager-issuers by removing docker-kubectl image from values.yaml.
+This is no longer needed because the patch script to set issuer secretRef is no longer used with cert-manager v1.12.9.
+
 ## v0.7.1
 
 - Upgrade cray-certmanager-issuers to authenticate with kubernetes service accounts for k8s 1.24
