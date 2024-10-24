@@ -27,6 +27,13 @@ cert-manager:
     repository: csm-docker/stable/quay.io/jetstack/cert-manager-controller
     # tag defaults to appVersion
   replicaCount: 3
+  resources:
+        requests:
+          cpu: 11m
+          memory: 138Mi
+        limits:
+          cpu: 14m
+          memory: 182Mi
   affinity:
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
