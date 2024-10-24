@@ -28,12 +28,12 @@ cert-manager:
     # tag defaults to appVersion
   replicaCount: 3
   resources:
-        requests:
-          cpu: 11m
-          memory: 138Mi
-        limits:
-          cpu: 14m
-          memory: 182Mi
+    requests:
+      cpu: 11m
+      memory: 138Mi
+    limits:
+      cpu: 14m
+      memory: 182Mi
   affinity:
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
