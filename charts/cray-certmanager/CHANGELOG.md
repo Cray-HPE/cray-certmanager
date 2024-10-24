@@ -2,6 +2,11 @@
 
 Changes to the `cray-certmanager` chart, indexed by semantic versions.
 
+##v0.8.2
+
+- Set resource requests for cert-manager pods
+
+
 ##v0.8.1
 
 - Enable PodSecurityPolicy so that chart can be upgraded during CSM 1.5 to CSM 1.6 upgrade.
