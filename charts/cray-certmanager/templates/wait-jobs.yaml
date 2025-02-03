@@ -27,4 +27,4 @@ spec:
             - '/bin/sh'
           args:
             - '-c'
-            - 'SLEEP=10; ITER=90; for i in `seq 1 $ITER`; do curl -ks https://{{ index .Values "cert-manager" "webhook" "serviceName" }}.{{ .Release.Namespace }}.svc; [ $? -eq 0 ] && break; echo "[$i] unable to connect to cert-manager webhook svc, sleeping $SLEEP"; sleep $SLEEP; done'
+            - 'SLEEP=10; ITER=90; for i in `seq 1 $ITER`; do curl -ks https://{{ .Values.webhookServiceName.serviceName }}.{{ .Release.Namespace }}.svc; [ $? -eq 0 ] && break; echo "[$i] unable to connect to cert-manager webhook svc, sleeping $SLEEP"; sleep $SLEEP; done'
