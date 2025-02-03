@@ -1,6 +1,6 @@
 apiVersion: v2
 name: cray-certmanager
-version: 0.8.1
+version: 0.9.0
 description: Support for managing PKI certificates and associated key material inside k8s
 keywords:
   - cert-manager
@@ -9,13 +9,13 @@ sources:
   - https://github.com/jetstack/cert-manager
 dependencies:
   - name: cert-manager
-    version: v1.12.9
+    version: v1.17.0
     repository: https://charts.jetstack.io
 maintainers:
   - name: kburns-hpe
   - name: mitchty
 icon: https://github.com/jetstack/cert-manager/raw/master/logo/logo.png
-appVersion: 1.12.9
+appVersion: 1.17.0
 annotations:
   artifacthub.io/changes: |
     - kind: security
@@ -29,11 +29,11 @@ annotations:
     - name: curl
       image: artifactory.algol60.net/csm-docker/stable/docker.io/curlimages/curl:7.80.0
     - name: cert-manager-cainjector
-      image: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-cainjector:v1.12.9
+      image: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-cainjector:v1.17.0
     - name: cert-manager-ctl
-      image: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-ctl:v1.12.9
+      image: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-ctl:v1.14.7
     - name: cert-manager-controller
-      image: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-controller:v1.12.9
+      image: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-controller:v1.17.0
     - name: cert-manager-webhook
-      image: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-webhook:v1.12.9
+      image: artifactory.algol60.net/csm-docker/stable/quay.io/jetstack/cert-manager-webhook:v1.17.0
   artifacthub.io/license: MIT
