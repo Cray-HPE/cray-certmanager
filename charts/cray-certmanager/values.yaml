@@ -83,9 +83,9 @@ cert-manager:
       "sidecar.istio.io/inject": "false"
     image:
       registry: artifactory.algol60.net
-      repository: csm-docker/stable/quay.io/jetstack/cert-manager-ctl
+      repository: csm-docker/stable/quay.io/jetstack/cert-manager-startupapicheck
 # Not actively ran just used in a k8s job to upgrade existing resources.
-ctl:
+startupapicheck:
   image:
     registry: artifactory.algol60.net
-    repository: csm-docker/stable/quay.io/jetstack/cert-manager-ctl
+    repository: csm-docker/stable/quay.io/jetstack/cert-manager-startupapicheck
