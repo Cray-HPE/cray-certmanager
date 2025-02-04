@@ -2,6 +2,10 @@
 
 Changes to the `cray-certmanager-issuers` chart, indexed by semantic versions.
 
+## v0.8.0
+
+- Upgrade cert-manager to v1.17.0
+
 ## v0.7.2
 
 - Update cray-certmanager-issuers by removing docker-kubectl image from values.yaml.

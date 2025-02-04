@@ -9,6 +9,8 @@ curl:
     repository: artifactory.algol60.net/csm-docker/stable/docker.io/curlimages/curl
     tag: 7.80.0
     pullPolicy: IfNotPresent
+webhookServiceName:
+  serviceName: cray-certmanager-cert-manager-webhook
 cert-manager:
   installCRDs: true
 
@@ -59,7 +61,6 @@ cert-manager:
                     values:
                       - webhook
               topologyKey: kubernetes.io/hostname
-    serviceName: cray-certmanager-cert-manager-webhook
   cainjector:
     image:
       registry: artifactory.algol60.net
@@ -83,9 +84,9 @@ cert-manager:
       "sidecar.istio.io/inject": "false"
     image:
       registry: artifactory.algol60.net
-      repository: csm-docker/stable/quay.io/jetstack/cert-manager-ctl
+      repository: csm-docker/stable/quay.io/jetstack/cert-manager-startupapicheck
 # Not actively ran just used in a k8s job to upgrade existing resources.
-ctl:
+startupapicheck:
   image:
     registry: artifactory.algol60.net
-    repository: csm-docker/stable/quay.io/jetstack/cert-manager-ctl
+    repository: csm-docker/stable/quay.io/jetstack/cert-manager-startupapicheck
