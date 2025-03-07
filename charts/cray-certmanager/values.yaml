@@ -29,6 +29,13 @@ cert-manager:
     repository: csm-docker/stable/quay.io/jetstack/cert-manager-controller
     # tag defaults to appVersion
   replicaCount: 3
+  resources:
+    requests:
+      cpu: 10m
+      memory: 100Mi
+    limits:
+      cpu: 100m
+      memory: 200Mi
   affinity:
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
@@ -49,6 +56,13 @@ cert-manager:
       repository: csm-docker/stable/quay.io/jetstack/cert-manager-webhook
       # tag defaults to appVersion
     replicaCount: 3
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
+      limits:
+        cpu: 100m
+        memory: 200Mi
     affinity:
       podAntiAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
@@ -67,6 +81,13 @@ cert-manager:
       repository: csm-docker/stable/quay.io/jetstack/cert-manager-cainjector
       # tag defaults to appVersion
     replicaCount: 3
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
+      limits:
+        cpu: 100m
+        memory: 200Mi
     affinity:
       podAntiAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
