@@ -2,6 +2,10 @@
 
 Changes to the `cray-certmanager` chart, indexed by semantic versions.
 
+##v0.9.1
+
+- Add resources specification
+
 ##v0.9.0
 
 - Upgrade cert-manager to v1.17.0
