@@ -20,7 +20,7 @@ cert-manager:
       # Create PodSecurityPolicy for cert-manager.
       #
       # Note that PodSecurityPolicy was deprecated in Kubernetes 1.21 and removed in Kubernetes 1.25.
-      enabled: true
+      enabled: false
       # Configure the PodSecurityPolicy to use AppArmor.
       useAppArmor: true
 
